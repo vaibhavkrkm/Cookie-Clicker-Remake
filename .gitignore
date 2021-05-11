@@ -1,2 +1,4 @@
 pycache/
 build/
+*.bat
+setup.py
