@@ -1,0 +1,12 @@
+Remake Developed by: Vaibhav Kumar
+
+Original Game: https://orteil.dashnet.org/cookieclicker/
+
+Assets:
+Background: Sindwiller from OpenGameArt.org
+Cookie: Clker-Free-Vector-Images from Pixabay.com
+Mouse Cursor: OpenClipart-Vectors from Pixabay.com
+Font used: Forte
+Cookie Click Sound: From Zapsplat.com
+Positive Tone 1: From Zapsplat.com (Under CC Attribution 4.0 International License)
+Positive Tone 2: From Zapsplat.com (Under CC Attribution 4.0 International License)
