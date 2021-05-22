@@ -7,6 +7,20 @@ def QUIT():
 	EXIT()
 
 
+def save_cookies(clicked_cookies, clicked_cookies_best):
+	if(clicked_cookies > clicked_cookies_best):
+		clicked_cookies_best = clicked_cookies
+		with open("cookies_highscore.data", "w") as f:
+			f.write(str(clicked_cookies_best))
+
+
+def load_cookies():
+	with open("cookies_highscore.data", "r") as f:
+		clicked_cookies_best = int(f.read())
+
+	return clicked_cookies_best
+
+
 pygame.mixer.pre_init(frequency=44100, size=16, channels=1, buffer=512)
 pygame.init()
 
@@ -24,6 +38,8 @@ cookies_font = pygame.font.Font("font.TTF", 40)
 # loading assets
 background = pygame.transform.scale(pygame.image.load("background.png"), (SCREENWIDTH, SCREENHEIGHT)).convert_alpha()
 cursor = pygame.image.load("cursor.png").convert_alpha()
+
+clicked_cookies_best = load_cookies()
 
 cookie = pygame.transform.scale(pygame.image.load("cookie.png"), (350, 350)).convert_alpha()
 cookie_rect = cookie.get_rect()
@@ -47,7 +63,10 @@ clicked_cookies = 0
 
 # text(s)
 title_text = game_font.render("Cookie Clicker", True, (233, 153, 51))
-cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
+best_title_text = cookies_font.render("Best", True, (251, 206, 17))
+best_cookies_text = cookies_font.render(f"{clicked_cookies_best} cookies", True, (251, 206, 17))
+current_title_text = cookies_font.render("Current", True, (233, 153, 51))
+current_cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
 
 run = True
 while run:
@@ -55,13 +74,15 @@ while run:
 	# event section start
 	for event in pygame.event.get():
 		if(event.type == pygame.QUIT):
+			save_cookies(clicked_cookies, clicked_cookies_best)
+
 			QUIT()
 		if(event.type == pygame.MOUSEBUTTONDOWN):
 			if(event.button == 1):
 				if(cookie_rect.collidepoint(event.pos)):
 					pygame.mixer.Sound.play(cookie_sound)
 					clicked_cookies += 1
-					cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
+					current_cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
 					if(clicked_cookies != 0):
 						if(clicked_cookies % 1000 == 0):
 							# play positive2 sound
@@ -82,9 +103,17 @@ while run:
 	# filling the display surface
 	game_display.blit(background, (0, 0))
 
+	# displaying the seperator line(s)
+	pygame.draw.line(game_display, (233, 153, 51), (SCREENWIDTH // 2, 620), (SCREENWIDTH // 2, 760))
+
 	# displaying the text(s)
-	game_display.blit(title_text, (SCREENWIDTH // 2 - title_text.get_width() // 2, 75))
-	game_display.blit(cookies_text, (SCREENWIDTH // 2 - cookies_text.get_width() // 2, SCREENHEIGHT - 75))
+	game_display.blit(title_text, (SCREENWIDTH // 2 - title_text.get_width() // 2, 75))     # title
+
+	game_display.blit(current_title_text, (SCREENWIDTH // 2 + 50, 620))
+	game_display.blit(current_cookies_text, (SCREENWIDTH // 2 + 50, 700))
+
+	game_display.blit(best_title_text, (SCREENWIDTH // 2 - 50 - best_title_text.get_width(), 620))
+	game_display.blit(best_cookies_text, (SCREENWIDTH // 2 - 50 - best_cookies_text.get_width(), 700))
 
 	# displaying the cookie
 	if(not click_timer_running):
