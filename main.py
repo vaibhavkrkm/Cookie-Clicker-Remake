@@ -38,6 +38,11 @@ cookies_font = pygame.font.Font("font.TTF", 40)
 # loading assets
 background = pygame.transform.scale(pygame.image.load("background.png"), (SCREENWIDTH, SCREENHEIGHT)).convert_alpha()
 cursor = pygame.image.load("cursor.png").convert_alpha()
+# buttons
+reset_button = pygame.image.load("reset_button.png").convert_alpha()
+reset_button_clicked = pygame.image.load("reset_button_clicked.png").convert_alpha()
+sound_button = pygame.image.load("sound_button.png").convert_alpha()
+sound_button_clicked = pygame.image.load("sound_button_clicked.png").convert_alpha()
 
 clicked_cookies_best = load_cookies()
 
@@ -52,8 +57,11 @@ cookie_clicked_rect.x = SCREENWIDTH // 2 - cookie_clicked.get_width() // 2
 cookie_clicked_rect.y = SCREENHEIGHT // 2 - cookie_clicked.get_height() // 2
 
 cookie_sound = pygame.mixer.Sound("click.wav")
+button_sound = pygame.mixer.Sound("button_sound.wav")
 positive1_sound = pygame.mixer.Sound("positive1.wav")
 positive2_sound = pygame.mixer.Sound("positive2.wav")
+
+sound_on = True
 
 click_timer = 0.1
 click_timer_running = False
@@ -75,15 +83,16 @@ while run:
 	for event in pygame.event.get():
 		if(event.type == pygame.QUIT):
 			save_cookies(clicked_cookies, clicked_cookies_best)
-
 			QUIT()
 		if(event.type == pygame.MOUSEBUTTONDOWN):
 			if(event.button == 1):
 				if(cookie_rect.collidepoint(event.pos)):
-					pygame.mixer.Sound.play(cookie_sound)
+					# cookie click
+					if(sound_on):
+						pygame.mixer.Sound.play(cookie_sound)
 					clicked_cookies += 1
 					current_cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
-					if(clicked_cookies != 0):
+					if(clicked_cookies != 0 and sound_on):
 						if(clicked_cookies % 1000 == 0):
 							# play positive2 sound
 							pygame.mixer.Sound.play(positive2_sound)
@@ -93,12 +102,32 @@ while run:
 
 					click_timer_running = True
 					click_timer_initial_time = pygame.time.get_ticks() / 1000
+				elif(event.pos[0] >= SCREENWIDTH - 40 - reset_button.get_width() and event.pos[0] <= SCREENWIDTH - 40 and event.pos[1] >= SCREENHEIGHT // 2 - reset_button.get_height() // 2 and event.pos[1] <= SCREENHEIGHT // 2 - reset_button.get_height() // 2 + reset_button.get_height()):
+					# reset button click
+					if(sound_on):
+						pygame.mixer.Sound.play(button_sound)
+					save_cookies(clicked_cookies, clicked_cookies_best)
+
+					clicked_cookies = 0
+					current_cookies_text = cookies_font.render(f"{clicked_cookies} cookies", True, (233, 153, 51))
+
+					clicked_cookies_best = load_cookies()
+					best_cookies_text = cookies_font.render(f"{clicked_cookies_best} cookies", True, (251, 206, 17))
+				elif(event.pos[0] >= 0 + 40 and event.pos[0] <= 0 + 40 + sound_button.get_width() and event.pos[1] >= SCREENHEIGHT // 2 - sound_button.get_height() // 2 and event.pos[1] <= SCREENHEIGHT // 2 - sound_button.get_height() // 2 + sound_button.get_height()):
+					# sound button click
+					if(sound_on):
+						pygame.mixer.Sound.play(button_sound)
+					
+					sound_on = not sound_on
 	# event section end
 
 	if(click_timer_running):
 		if(pygame.time.get_ticks() / 1000 - click_timer_initial_time >= click_timer):
 			click_timer_initial_time = None
 			click_timer_running = False
+
+	# getting the current mouse position
+	mouse_pos = pygame.mouse.get_pos()
 
 	# filling the display surface
 	game_display.blit(background, (0, 0))
@@ -115,6 +144,17 @@ while run:
 	game_display.blit(best_title_text, (SCREENWIDTH // 2 - 50 - best_title_text.get_width(), 620))
 	game_display.blit(best_cookies_text, (SCREENWIDTH // 2 - 50 - best_cookies_text.get_width(), 700))
 
+	# button(s)
+	if(mouse_pos[0] >= SCREENWIDTH - 40 - reset_button.get_width() and mouse_pos[0] <= SCREENWIDTH - 40 and mouse_pos[1] >= SCREENHEIGHT // 2 - reset_button.get_height() // 2 and mouse_pos[1] <= SCREENHEIGHT // 2 - reset_button.get_height() // 2 + reset_button.get_height()):
+		game_display.blit(reset_button_clicked, (SCREENWIDTH - 40 - reset_button.get_width(), SCREENHEIGHT // 2 - reset_button.get_height() // 2))
+	else:
+		game_display.blit(reset_button, (SCREENWIDTH - 40 - reset_button.get_width(), SCREENHEIGHT // 2 - reset_button.get_height() // 2))
+	
+	if(mouse_pos[0] >= 0 + 40 and mouse_pos[0] <= 0 + 40 + sound_button.get_width() and mouse_pos[1] >= SCREENHEIGHT // 2 - sound_button.get_height() // 2 and mouse_pos[1] <= SCREENHEIGHT // 2 - sound_button.get_height() // 2 + sound_button.get_height()):
+		game_display.blit(sound_button_clicked, (0 + 40, SCREENHEIGHT // 2 - sound_button.get_height() // 2))
+	else:
+		game_display.blit(sound_button, (0 + 40, SCREENHEIGHT // 2 - sound_button.get_height() // 2))
+
 	# displaying the cookie
 	if(not click_timer_running):
 		game_display.blit(cookie, cookie_rect)
@@ -122,7 +162,6 @@ while run:
 		game_display.blit(cookie_clicked, cookie_clicked_rect)
 
 	# displaying the custom mouse cursor
-	mouse_pos = pygame.mouse.get_pos()
 	game_display.blit(cursor, mouse_pos)
 
 	# updating the display surface
