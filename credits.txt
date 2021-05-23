@@ -6,7 +6,9 @@ Assets:
 Background: Sindwiller from OpenGameArt.org
 Cookie: Clker-Free-Vector-Images from Pixabay.com
 Mouse Cursor: OpenClipart-Vectors from Pixabay.com
-Font used: Forte
+Reset and Sound buttons by Vaibhav Kumar
+Font(s) used: Forte, Cooper Black
 Cookie Click Sound: From Zapsplat.com
+Button Click Sound: From Zapsplat.com
 Positive Tone 1: From Zapsplat.com (Under CC Attribution 4.0 International License)
 Positive Tone 2: From Zapsplat.com (Under CC Attribution 4.0 International License)
